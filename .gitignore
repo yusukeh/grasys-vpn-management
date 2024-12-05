@@ -1,2 +1,6 @@
 # environments for argc
 .env.local
+
+# tmp directory
+.tmp/*
+!.tmp/.gitkeep

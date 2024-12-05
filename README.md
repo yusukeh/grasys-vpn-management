@@ -15,6 +15,11 @@
   - [Setup: Postfix](#setup-postfix)
     - [SendGrid API Key](#sendgrid-api-key)
 - [Usage](#usage)
+- [Appendix](#appendix)
+  - [easyrsa](#easyrsa)
+    - [Install easyrsa](#install-easyrsa)
+    - [init](#init)
+    - [build ca](#build-ca)
 
 <!-- mtoc-end -->
 
@@ -112,3 +117,29 @@ EOL
 ```
 
 ## Usage
+
+---
+
+# Appendix
+
+## easyrsa
+
+### Install easyrsa
+
+```bash
+sudo apt install easyrsa
+```
+
+### init
+
+```bash
+cd /opt/grasys-vpn-management
+/usr/share/easy-rsa/easyrsa init-pki
+```
+
+### build ca
+
+```bash
+cd /opt/grasys-vpn-management
+/usr/share/easy-rsa/easyrsa build-ca
+```

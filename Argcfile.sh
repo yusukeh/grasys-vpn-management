@@ -54,6 +54,25 @@ setup_postfix() {
   _info "Setup Postfix"
 }
 
+# @cmd setup wireguard
+setup_wireguard() {
+  _info "Setup WireGuard"
+}
+
+# @cmd setup openvpn
+setup_openvpn() {
+  _info "Setup OpenVPN"
+}
+
+# @cmd create user
+# @option --user!
+create_user() {
+  _info "Create User"
+
+  _debug "${argc_user}"
+}
+
+
 ###############################################################################
 # See more details at https://github.com/sigoden/argc
 eval "$(argc --argc-eval "$0" "$@")"

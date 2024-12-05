@@ -29,7 +29,7 @@ function _error() {
 }
 
 # for mustache
-function _init_mustache() {
+function _install_mustache() {
   if [ ! -d ${mustache_deploy} ]; then
     _info "git clone ${mustache_repo}"
     git clone ${mustache_repo} ${mustache_deploy}
@@ -49,9 +49,10 @@ function _load_mustache() {
 
 ###############################################################################
 ### argc sub-commands
-# @cmd setup postfix
-setup_postfix() {
-  _info "Setup Postfix"
+# @cmd install mustache
+install_mustache() {
+  _info "Install mustache"
+  _install_mustache
 }
 
 # @cmd setup wireguard

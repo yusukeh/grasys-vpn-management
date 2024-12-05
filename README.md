@@ -7,13 +7,15 @@
 - [Description](#description)
 - [Requirements](#requirements)
 - [Setup](#setup)
-  - [Setup: ssh-keygen](#setup-ssh-keygen)
+  - [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
     - [ssh key generate](#ssh-key-generate)
-    - [create ssh config](#create-ssh-config)
+    - [create ssh config for github](#create-ssh-config-for-github)
   - [Setup: argc](#setup-argc)
   - [Setup: pastel](#setup-pastel)
   - [Setup: Postfix](#setup-postfix)
     - [SendGrid API Key](#sendgrid-api-key)
+    - [postfix main.cf](#postfix-maincf)
+  - [Setup: easyrsa](#setup-easyrsa)
 - [Usage](#usage)
 - [Appendix](#appendix)
   - [easyrsa](#easyrsa)
@@ -46,7 +48,7 @@
 
 ## Setup
 
-### Setup: ssh-keygen
+### Setup: ssh-keygen for github
 
 #### ssh key generate
 
@@ -56,7 +58,7 @@ sshkey=grasys_girhub.id_${type}
 ssh-keygen -t ed25519 -f ${HOME}/.ssh/${sshkey}
 ```
 
-#### create ssh config
+#### create ssh config for github
 
 ```bash
 cat << EOL > .ssh/config
@@ -107,13 +109,48 @@ sudo apt install postfix libsasl2-modules
 
 #### SendGrid API Key
 
-SendGridのAPIKeyを取得し、以下の環境変数SENDGRID_APIKEYにsetして以下を発行して下さい。
+- SendGridのAPIKeyを取得し、以下の環境変数SENDGRID_APIKEYにsetして以下を発行して下さい。
+- mustacheをinstallする必要があります。
 
 ```bash
-SENDGRID_APIKEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-cat <<EOL > .env.local
-SENDGRID_APIKEY=${SENDGRID_APIKEY}
+argc install_mustache
+
+if [ -f contrib/mo/mo ]; then
+  source contrib/mo/mo
+if 
+
+declare -x SENDGRID_APIKEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+if [ -d /etc/postfix -a ! -f /etc/postfix/sasl_passwd ]; then
+  cat templates/postfix/sasl_passwd.tmpl | mo > /etc/postfix/sasl_passwd
+fi
+
+postmap /etc/postfix/sasl_passwd
+```
+
+#### postfix main.cf
+
+```bash
+if [ ! -f /etc/postfix/main.cf.bak ]; then
+  cp -p /etc/postfix/main.cf /etc/postfix/main.cf.bak
+  sed -e "s/^default_transport = error$/#default_transport = error/m" /etc/postfix/main.cf
+  sed -e "s/^relay_transport = error$/#relay_transport = error/m" /etc/postfix/main.cf
+  cat <<EOL >> /etc/postfix/main.cf
+
+# for SendGrid
+relayhost = [smtp.sendgrid.net]:2525
+smtp_tls_security_level = encrypt
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+header_size_limit = 4096000
+smtp_sasl_security_options = noanonymous
 EOL
+fi
+```
+
+### Setup: easyrsa
+
+```bash
+suto apt install easy-rsa
 ```
 
 ## Usage

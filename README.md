@@ -55,18 +55,24 @@
 
 ### Setup: ssh-keygen for github
 
+> [!IMPORTANT]
+> rootで実施してください。
+
 #### ssh key generate
 
 ```bash
 type=ed25519
 sshkey=grasys_girhub.id_${type}
-ssh-keygen -t ed25519 -f ${HOME}/.ssh/${sshkey}
+if [ ! -f ${HOME}/.ssh/${sshkey} ]; then
+  ssh-keygen -t ${type} -f ${HOME}/.ssh/${sshkey}
+fi
 ```
 
 #### create ssh config for github
 
 ```bash
-cat << EOL > .ssh/config
+if [ ! -f ${HOME}/.ssh/config ]; then
+cat << EOL > ${HOME}/.ssh/config
 Host github.com
   IdentityFile ~/.ssh/${sshkey}
   User git
@@ -77,6 +83,7 @@ StrictHostKeyChecking no
 ServerAliveInterval 10
 ServerAliveCountMax 3
 EOL
+fi
 ```
 
 ### Setup: argc
@@ -98,6 +105,7 @@ argc --argc-help
 [GitHub sharkdp/pastel - On Debian-based systems](https://github.com/sharkdp/pastel?tab=readme-ov-file#on-debian-based-systems)
 
 ```bash
+cd /opt/grasys-vpn-management
 url="https://github.com/sharkdp/pastel/releases/download/v0.8.1/pastel_0.8.1_amd64.deb"
 deb=$(basename ${url})
 curl -fsSL -o tmp/${deb} ${url}
@@ -107,8 +115,9 @@ sudo dpkg -i tmp/${deb}
 ### Setup: sysctl
 
 ```bash
+cd /opt/grasys-vpn-management
 if [ ! -L /etc/sysctl.d/99_grasys_vpn.conf ]; then
-  ln -s etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
+  ln -s /opt/grasys-vpn-management/etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
 fi
 sysctl -p
 ```
@@ -116,10 +125,11 @@ sysctl -p
 ### Setup: ulimit
 
 ```bash
+cd /opt/grasys-vpn-management
 if [ ! -L /etc/security/limits.d/99_unlimited.conf ]; then
-  ln -s etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
+  ln -s /opt/grasys-vpn-management/etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
 fi
-ulimit
+ulimit -a
 ```
 
 ### Setup: Postfix

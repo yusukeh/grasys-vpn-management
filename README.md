@@ -12,6 +12,8 @@
     - [create ssh config for github](#create-ssh-config-for-github)
   - [Setup: argc](#setup-argc)
   - [Setup: pastel](#setup-pastel)
+  - [Setup: sysctl](#setup-sysctl)
+  - [Setup: ulimit](#setup-ulimit)
   - [Setup: Postfix](#setup-postfix)
     - [SendGrid API Key](#sendgrid-api-key)
     - [postfix main.cf](#postfix-maincf)
@@ -100,6 +102,24 @@ url="https://github.com/sharkdp/pastel/releases/download/v0.8.1/pastel_0.8.1_amd
 deb=$(basename ${url})
 curl -fsSL -o tmp/${deb} ${url}
 sudo dpkg -i tmp/${deb}
+```
+
+### Setup: sysctl
+
+```bash
+if [ ! -L /etc/sysctl.d/99_grasys_vpn.conf ]; then
+  ln -s etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
+fi
+sysctl -p
+```
+
+### Setup: ulimit
+
+```bash
+if [ ! -L /etc/security/limits.d/99_unlimited.conf ]; then
+  ln -s etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
+fi
+ulimit
 ```
 
 ### Setup: Postfix

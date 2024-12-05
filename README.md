@@ -7,6 +7,9 @@
 - [Description](#description)
 - [Requirements](#requirements)
 - [Setup](#setup)
+  - [Setup: ssh-keygen](#setup-ssh-keygen)
+    - [ssh key generate](#ssh-key-generate)
+    - [create ssh config](#create-ssh-config)
   - [Setup: argc](#setup-argc)
   - [Setup: pastel](#setup-pastel)
   - [Setup: Postfix](#setup-postfix)
@@ -30,13 +33,39 @@
 
 > [!IMPORTANT]
 >
-> - 2024/12/05 時点でのGoogle Compute EngineのUbuntu 2404 LTS Imageをベースにしています。
+> - 2024/12/05 時点でのGoogle Compute EngineのUbuntu 2404 LTS Minimul Imageをベースにしています。
 > - [GitHub sigoden/argc]が必須です。
 > - [mustache](https://mustache.github.io/)のbash用である[mo](https://github.com/tests-always-included/mo)が必須です。
 > - [pastel](https://github.com/sharkdp/pastel)が使われています。
 > - openvpn/wireguardのclient configを配布するためにPostfixとSendGrid APIが必須です。
 
 ## Setup
+
+### Setup: ssh-keygen
+
+#### ssh key generate
+
+```bash
+type=ed25519
+sshkey=grasys_girhub.id_${type}
+ssh-keygen -t ed25519 -f ${HOME}/.ssh/${sshkey}
+```
+
+#### create ssh config
+
+```bash
+cat << EOL > .ssh/config
+Host github.com
+  IdentityFile ~/.ssh/${sshkey}
+  User git
+  IdentitiesOnly yes
+
+TCPKeepAlive yes
+StrictHostKeyChecking no
+ServerAliveInterval 10
+ServerAliveCountMax 3
+EOL
+```
 
 ### Setup: argc
 

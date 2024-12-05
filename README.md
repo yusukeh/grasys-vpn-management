@@ -15,13 +15,14 @@
   - [Setup: Postfix](#setup-postfix)
     - [SendGrid API Key](#sendgrid-api-key)
     - [postfix main.cf](#postfix-maincf)
+    - [reload postfix](#reload-postfix)
   - [Setup: easyrsa](#setup-easyrsa)
-- [Usage](#usage)
-- [Appendix](#appendix)
-  - [easyrsa](#easyrsa)
     - [Install easyrsa](#install-easyrsa)
-    - [init](#init)
-    - [build ca](#build-ca)
+    - [easyrsa init-pki](#easyrsa-init-pki)
+    - [easyrsa build-ca](#easyrsa-build-ca)
+    - [easyrsa build-server-full](#easyrsa-build-server-full)
+    - [easyrsa gen-dh](#easyrsa-gen-dh)
+- [Usage](#usage)
 
 <!-- mtoc-end -->
 
@@ -32,11 +33,13 @@
 - [argc](https://github.com/sigoden/argc)
 - [mustache for bash](https://github.com/tests-always-included/mo)
 - [pastel](https://github.com/sharkdp/pastel)
+- curl
+- jq
 - postfix
 - openvpn
 - wireguard
-- curl
-- jq
+- easy-rsa
+- expect
 
 > [!IMPORTANT]
 >
@@ -147,36 +150,67 @@ EOL
 fi
 ```
 
+#### reload postfix
+
+```bash
+/etc/init.d/postfix reload
+```
+
 ### Setup: easyrsa
 
-```bash
-suto apt install easy-rsa
-```
-
-## Usage
-
----
-
-# Appendix
-
-## easyrsa
-
-### Install easyrsa
+#### Install easyrsa
 
 ```bash
-sudo apt install easyrsa
+apt install easy-rsa expect
 ```
 
-### init
+#### easyrsa init-pki
 
 ```bash
 cd /opt/grasys-vpn-management
 /usr/share/easy-rsa/easyrsa init-pki
 ```
 
-### build ca
+#### easyrsa build-ca
 
 ```bash
 cd /opt/grasys-vpn-management
-/usr/share/easy-rsa/easyrsa build-ca
+
+expect -c "
+set timeout -1
+spawn /usr/share/easy-rsa/easyrsa build-ca nopass
+expect \"Easy-RSA CA\"
+send \"grasys\n\"
+interact
+"
+
+openssl x509 -in pki/ca.crt -text -noout | grep grasys
+cat pki/ca.crt
 ```
+
+#### easyrsa build-server-full
+
+```bash
+cd /opt/grasys-vpn-management
+
+expect -c "
+spawn /usr/share/easy-rsa/easyrsa build-server-full server nopass
+expect \"Confirm request details\"
+send \"yes\n\"
+interact
+"
+
+openssl rsa -in pki/private/server.key -text -noout
+cat pki/private/server.key
+```
+
+#### easyrsa gen-dh
+
+```bash
+/usr/share/easy-rsa/easyrsa gen-dh
+
+openssl dhparam -in pki/dh.pem -text -noout
+cat pki/dh.pem
+```
+
+## Usage

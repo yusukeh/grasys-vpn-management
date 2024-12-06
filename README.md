@@ -4,27 +4,27 @@
 
 <!-- mtoc-start -->
 
-- [Description](#description)
-- [Requirements](#requirements)
-- [Setup](#setup)
-  - [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
-    - [ssh key generate](#ssh-key-generate)
-    - [create ssh config for github](#create-ssh-config-for-github)
-  - [Setup: argc](#setup-argc)
-  - [Setup: pastel](#setup-pastel)
-  - [Setup: sysctl](#setup-sysctl)
-  - [Setup: ulimit](#setup-ulimit)
-  - [Setup: Postfix](#setup-postfix)
-    - [SendGrid API Key](#sendgrid-api-key)
-    - [postfix main.cf](#postfix-maincf)
-    - [reload postfix](#reload-postfix)
-  - [Setup: easyrsa](#setup-easyrsa)
-    - [Install easyrsa](#install-easyrsa)
-    - [easyrsa init-pki](#easyrsa-init-pki)
-    - [easyrsa build-ca](#easyrsa-build-ca)
-    - [easyrsa build-server-full](#easyrsa-build-server-full)
-    - [easyrsa gen-dh](#easyrsa-gen-dh)
-- [Usage](#usage)
+* [Description](#description)
+* [Requirements](#requirements)
+* [Setup](#setup)
+  * [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
+    * [ssh key generate](#ssh-key-generate)
+    * [create ssh config for github](#create-ssh-config-for-github)
+  * [Setup: argc](#setup-argc)
+  * [Setup: pastel](#setup-pastel)
+  * [Setup: sysctl](#setup-sysctl)
+  * [Setup: ulimit](#setup-ulimit)
+  * [Setup: Postfix](#setup-postfix)
+    * [SendGrid API Key](#sendgrid-api-key)
+    * [postfix main.cf](#postfix-maincf)
+    * [reload postfix](#reload-postfix)
+  * [Setup: easyrsa](#setup-easyrsa)
+    * [Install easyrsa](#install-easyrsa)
+    * [easyrsa init-pki](#easyrsa-init-pki)
+    * [easyrsa build-ca](#easyrsa-build-ca)
+    * [easyrsa build-server-full](#easyrsa-build-server-full)
+    * [easyrsa gen-dh](#easyrsa-gen-dh)
+* [Usage](#usage)
 
 <!-- mtoc-end -->
 
@@ -40,8 +40,11 @@
 - postfix
 - openvpn
 - wireguard
+- sqlite3
 - easy-rsa
 - expect
+- net-tools
+- ipcalc-ng
 
 > [!IMPORTANT]
 >
@@ -146,7 +149,7 @@ sudo apt install postfix libsasl2-modules
 - mustacheをinstallする必要があります。
 
 ```bash
-argc install_mustache
+argc init
 
 if [ -f contrib/mo/mo ]; then
   source contrib/mo/mo

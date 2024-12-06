@@ -1,0 +1,15 @@
+# openvpn
+openvpn:
+  interface: tun0
+  ipv4:
+    network: 192.168.1.241
+    netmask: 255.255.255.0
+  ipv6:
+    network: 
+    netmask:
+
+# wireguard
+wireguard:
+  interface: wg0
+  port: 52202
+

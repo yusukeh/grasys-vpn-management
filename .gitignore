@@ -3,8 +3,9 @@
 
 # contrib
 contrib/*
-!contrib/.gitkeep
 
 # tmp directory
 tmp/*
-!tmp/.gitkeep
+
+# data
+data/*

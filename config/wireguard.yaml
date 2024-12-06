@@ -1,0 +1,12 @@
+# wireguard
+interface: wg0
+port: 52202
+
+ipv4: 
+  network: 192.168.241.0
+  netmask: 255.255.255.0
+
+ipv6:
+  network: fd00:abcd:1234::1
+  netmask: 64
+

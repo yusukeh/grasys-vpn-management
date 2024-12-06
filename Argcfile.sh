@@ -119,7 +119,6 @@ function _insert_wireguard_ipv4() {
 
   for ((i = ${start_ip}; i <= ${end_ip}; i++));
   do
-    _info "ipaddr: ${i}"
     ipaddr=$(_num_to_ip $i)
     sql=$(cat templates/sqlite3/insert_wireguard_ipv4.sql | mo)
     sqlite3 ${database} "${sql}"
@@ -148,7 +147,6 @@ function _insert_wireguard_ipv6() {
 
   for ipaddr in $(_ipcalc_ipv6 $network $netmask)
   do
-    _info "ipaddr: ${ipaddr}"
     sql=$(cat templates/sqlite3/insert_wireguard_ipv6.sql | mo)
     sqlite3 ${database}	"${sql}"
   done
@@ -172,7 +170,10 @@ clean() {
 init() {
   _init_dirs
   _install_mustache
+  _load_mustache
   _create_sqlite
+  _insert_wireguard_ipv4
+  _insert_wireguard_ipv6
 }
 
 # @cmd setup wireguard

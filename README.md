@@ -111,6 +111,7 @@ argc --argc-help
 cd /opt/grasys-vpn-management
 url="https://github.com/sharkdp/pastel/releases/download/v0.8.1/pastel_0.8.1_amd64.deb"
 deb=$(basename ${url})
+test ! -d tmp && mkdir tmp
 curl -fsSL -o tmp/${deb} ${url}
 sudo dpkg -i tmp/${deb}
 ```

@@ -102,13 +102,14 @@ function _num_to_ip() {
 }
 
 function _insert_wireguard_ipv4() {
+  _info "wireguard ipv4"
   network=$(yq -r .ipv4.network < ${config_wireguard})
   _info "network ${network}"
   netmask=$(yq -r .ipv4.netmask < ${config_wireguard})
   _info "netmask ${netmask}"
-  ip_min=$(ipcalc -n $network $netmask | awk '/HostMin:/ {print $2}')
+  ip_min=$(ipcalc-ng --minaddr $network $netmask | sed -e "s/^MINADDR=//g")
   _info "ip_min ${ip_min}"
-  ip_max=$(ipcalc -n $network $netmask | awk '/HostMax:/ {print $2}')
+  ip_max=$(ipcalc-ng --maxaddr $network $netmask | sed -e "s/^MAXADDR=//g")
   _info "ip_max ${ip_max}"
 
   start_ip=$(_ip_to_num ${ip_min})
@@ -118,9 +119,38 @@ function _insert_wireguard_ipv4() {
 
   for ((i = ${start_ip}; i <= ${end_ip}; i++));
   do
+    _info "ipaddr: ${i}"
     ipaddr=$(_num_to_ip $i)
     sql=$(cat templates/sqlite3/insert_wireguard_ipv4.sql | mo)
     sqlite3 ${database} "${sql}"
+  done
+}
+
+function _ipcalc_ipv6() {
+  python3 - <<EOF
+import ipaddress
+net = ipaddress.IPv6Network("${network}/${netmask}", strict=False)
+for ip in net.hosts():
+    print(ip)
+EOF
+}
+
+function _insert_wireguard_ipv6() {
+  _info "wireguard ipv6"
+  network=$(yq -r .ipv6.network < ${config_wireguard})
+  _info "network ${network}"
+  netmask=$(yq -r .ipv6.netmask < ${config_wireguard})
+  _info "netmask ${netmask}"
+  ip_min=$(ipcalc-ng --minaddr $network/$netmask | sed -e "s/^MINADDR=//g")
+  _info "ip_min ${ip_min}"
+  ip_max=$(ipcalc-ng --maxaddr $network/$netmask | sed -e "s/^MAXADDR=//g")
+  _info "ip_max ${ip_max}"
+
+  for ipaddr in $(_ipcalc_ipv6 $network $netmask)
+  do
+    _info "ipaddr: ${ipaddr}"
+    sql=$(cat templates/sqlite3/insert_wireguard_ipv6.sql | mo)
+    sqlite3 ${database}	"${sql}"
   done
 }
 
@@ -130,6 +160,7 @@ function _insert_wireguard_ipv4() {
 debug() {
   _load_mustache
   _insert_wireguard_ipv4
+  _insert_wireguard_ipv6
 }
 
 # @cmd cleanup

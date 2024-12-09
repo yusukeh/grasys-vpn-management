@@ -160,11 +160,11 @@ sudo apt install postfix libsasl2-modules
 - mustacheをinstallする必要があります。
 
 ```bash
-argc init
+argc install_mustache
 
 if [ -f contrib/mo/mo ]; then
   source contrib/mo/mo
-if 
+fi 
 
 declare -x SENDGRID_APIKEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 if [ -d /etc/postfix -a ! -f /etc/postfix/sasl_passwd ]; then

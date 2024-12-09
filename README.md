@@ -19,6 +19,7 @@
     - [SendGrid API Key](#sendgrid-api-key)
     - [postfix main.cf](#postfix-maincf)
     - [reload postfix](#reload-postfix)
+    - [test e-mail](#test-e-mail)
   - [Setup: easyrsa](#setup-easyrsa)
     - [Install easyrsa](#install-easyrsa)
     - [easyrsa init-pki](#easyrsa-init-pki)
@@ -66,7 +67,7 @@
 
 ```bash
 apt update && apt upgrade
-apt install curl jq postfix libsasl2-modules openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng neovim
+apt install curl jq yq postfix libsasl2-modules openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng neovim
 ```
 
 ### Setup: ssh-keygen for github
@@ -198,6 +199,19 @@ fi
 
 ```bash
 /etc/init.d/postfix reload
+```
+
+#### test e-mail
+
+```bash
+cat <<EOL | /usr/lib/sendmail -t
+To: ito@grasys.io
+Cc: hasegawa@grasys.io
+Subject: test e-mail from ${HOSTNAME}
+
+${HOSTNAME}
+test e-mail
+EOL
 ```
 
 ### Setup: easyrsa

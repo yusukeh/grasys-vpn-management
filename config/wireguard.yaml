@@ -8,5 +8,5 @@ ipv4:
 
 ipv6:
   network: fd00:abcd:1234::1
-  netmask: 119
+  netmask: 120
 

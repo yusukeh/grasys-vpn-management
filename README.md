@@ -4,29 +4,29 @@
 
 <!-- mtoc-start -->
 
-* [Description](#description)
-* [Requirements](#requirements)
-* [Setup](#setup)
-  * [Setup: apt](#setup-apt)
-  * [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
-    * [ssh key generate](#ssh-key-generate)
-    * [create ssh config for github](#create-ssh-config-for-github)
-  * [Setup: argc](#setup-argc)
-  * [Setup: pastel](#setup-pastel)
-  * [Setup: sysctl](#setup-sysctl)
-  * [Setup: ulimit](#setup-ulimit)
-  * [Setup: Postfix](#setup-postfix)
-    * [SendGrid API Key](#sendgrid-api-key)
-    * [postfix main.cf](#postfix-maincf)
-    * [reload postfix](#reload-postfix)
-  * [Setup: easyrsa](#setup-easyrsa)
-    * [Install easyrsa](#install-easyrsa)
-    * [easyrsa init-pki](#easyrsa-init-pki)
-    * [easyrsa build-ca](#easyrsa-build-ca)
-    * [easyrsa build-server-full](#easyrsa-build-server-full)
-    * [easyrsa gen-dh](#easyrsa-gen-dh)
-* [Usage](#usage)
-  * [init](#init)
+- [Description](#description)
+- [Requirements](#requirements)
+- [Setup](#setup)
+  - [Setup: apt](#setup-apt)
+  - [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
+    - [ssh key generate](#ssh-key-generate)
+    - [create ssh config for github](#create-ssh-config-for-github)
+  - [Setup: argc](#setup-argc)
+  - [Setup: pastel](#setup-pastel)
+  - [Setup: sysctl](#setup-sysctl)
+  - [Setup: ulimit](#setup-ulimit)
+  - [Setup: Postfix](#setup-postfix)
+    - [SendGrid API Key](#sendgrid-api-key)
+    - [postfix main.cf](#postfix-maincf)
+    - [reload postfix](#reload-postfix)
+  - [Setup: easyrsa](#setup-easyrsa)
+    - [Install easyrsa](#install-easyrsa)
+    - [easyrsa init-pki](#easyrsa-init-pki)
+    - [easyrsa build-ca](#easyrsa-build-ca)
+    - [easyrsa build-server-full](#easyrsa-build-server-full)
+    - [easyrsa gen-dh](#easyrsa-gen-dh)
+- [Usage](#usage)
+  - [init](#init)
 
 <!-- mtoc-end -->
 
@@ -66,7 +66,7 @@
 
 ```bash
 apt update && apt upgrade
-apt install curl jq postfix libsasl2-modules openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng
+apt install curl jq postfix libsasl2-modules openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng neovim
 ```
 
 ### Setup: ssh-keygen for github
@@ -281,5 +281,3 @@ sqlite3 data/clients.sqlite3 "SELECT * FROM wireguard_ipv6"
 sqlite3 data/clients.sqlite3 "SELECT count(*) FROM wireguard_ipv4"
 sqlite3 data/clients.sqlite3 "SELECT count(*) FROM wireguard_ipv6"
 ```
-
-

@@ -131,7 +131,7 @@ sudo dpkg -i tmp/${deb}
 ```bash
 cd /opt/grasys-vpn-management
 if [ ! -L /etc/sysctl.d/99_grasys_vpn.conf ]; then
-  ln -s etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
+  ln -s /opt/grasys-vpn-management/etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
 fi
 sysctl -p
 ```
@@ -141,7 +141,7 @@ sysctl -p
 ```bash
 cd /opt/grasys-vpn-management
 if [ ! -L /etc/security/limits.d/99_unlimited.conf ]; then
-  ln -s etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
+  ln -s /opt/grasys-vpn-management/etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
 fi
 ulimit -a
 ```

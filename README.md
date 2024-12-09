@@ -131,7 +131,7 @@ sudo dpkg -i tmp/${deb}
 ```bash
 cd /opt/grasys-vpn-management
 if [ ! -L /etc/sysctl.d/99_grasys_vpn.conf ]; then
-  ln -s etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
+  ln -s /opt/grasys-vpn-management/etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
 fi
 sysctl -p
 ```
@@ -141,7 +141,7 @@ sysctl -p
 ```bash
 cd /opt/grasys-vpn-management
 if [ ! -L /etc/security/limits.d/99_unlimited.conf ]; then
-  ln -s etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
+  ln -s /opt/grasys-vpn-management/etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
 fi
 ulimit -a
 ```
@@ -160,11 +160,11 @@ sudo apt install postfix libsasl2-modules
 - mustacheをinstallする必要があります。
 
 ```bash
-argc init
+argc install_mustache
 
 if [ -f contrib/mo/mo ]; then
   source contrib/mo/mo
-if 
+fi 
 
 declare -x SENDGRID_APIKEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 if [ -d /etc/postfix -a ! -f /etc/postfix/sasl_passwd ]; then

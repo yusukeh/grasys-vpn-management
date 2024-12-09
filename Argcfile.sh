@@ -166,6 +166,11 @@ clean() {
   _clean
 }
 
+# @cmd install mustache
+install_mustache() {
+  _install_mustache
+}
+
 # @cmd initialize
 init() {
   _init_dirs

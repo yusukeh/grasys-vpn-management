@@ -56,10 +56,17 @@
 
 ## Setup
 
-### Setup: ssh-keygen for github
-
 > [!IMPORTANT]
 > rootで実施してください。
+
+### Setup: apt
+
+```bash
+apt update && apt upgrade
+apt install curl jq postfix openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng
+```
+
+### Setup: ssh-keygen for github
 
 #### ssh key generate
 

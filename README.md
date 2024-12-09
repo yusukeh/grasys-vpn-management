@@ -33,6 +33,10 @@
 
 ## Description
 
+grasys Incのwireguardを管理するツールです。
+
+基本的にはCommand-Lineのみのツールになっています。
+
 ## Requirements
 
 - [argc](https://github.com/sigoden/argc)
@@ -53,9 +57,9 @@
 > [!IMPORTANT]
 >
 > - 2024/12/05 時点でのGoogle Compute EngineのUbuntu 2404 LTS Minimul Imageをベースにしています。
-> - [GitHub sigoden/argc]が必須です。
-> - [mustache](https://mustache.github.io/)のbash用である[mo](https://github.com/tests-always-included/mo)が必須です。
-> - [pastel](https://github.com/sharkdp/pastel)が使われています。
+> - [argc](https://github.com/sigoden/argc) が必須です。
+> - [mustache](https://mustache.github.io/) のbash用である [mo](https://github.com/tests-always-included/mo) が必須です。
+> - [pastel](https://github.com/sharkdp/pastel) が使われています。（長谷川の趣味です・・・）
 > - openvpn/wireguardのclient configを配布するためにPostfixとSendGrid APIが必須です。
 
 ## Setup

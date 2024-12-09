@@ -178,7 +178,7 @@ init() {
   _load_mustache
   _create_sqlite
   _insert_wireguard_ipv4
-  _insert_wireguard_ipv6
+  #_insert_wireguard_ipv6
 }
 
 # @cmd setup wireguard

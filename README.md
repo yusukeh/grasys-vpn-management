@@ -4,27 +4,28 @@
 
 <!-- mtoc-start -->
 
-* [Description](#description)
-* [Requirements](#requirements)
-* [Setup](#setup)
-  * [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
-    * [ssh key generate](#ssh-key-generate)
-    * [create ssh config for github](#create-ssh-config-for-github)
-  * [Setup: argc](#setup-argc)
-  * [Setup: pastel](#setup-pastel)
-  * [Setup: sysctl](#setup-sysctl)
-  * [Setup: ulimit](#setup-ulimit)
-  * [Setup: Postfix](#setup-postfix)
-    * [SendGrid API Key](#sendgrid-api-key)
-    * [postfix main.cf](#postfix-maincf)
-    * [reload postfix](#reload-postfix)
-  * [Setup: easyrsa](#setup-easyrsa)
-    * [Install easyrsa](#install-easyrsa)
-    * [easyrsa init-pki](#easyrsa-init-pki)
-    * [easyrsa build-ca](#easyrsa-build-ca)
-    * [easyrsa build-server-full](#easyrsa-build-server-full)
-    * [easyrsa gen-dh](#easyrsa-gen-dh)
-* [Usage](#usage)
+- [Description](#description)
+- [Requirements](#requirements)
+- [Setup](#setup)
+  - [Setup: apt](#setup-apt)
+  - [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
+    - [ssh key generate](#ssh-key-generate)
+    - [create ssh config for github](#create-ssh-config-for-github)
+  - [Setup: argc](#setup-argc)
+  - [Setup: pastel](#setup-pastel)
+  - [Setup: sysctl](#setup-sysctl)
+  - [Setup: ulimit](#setup-ulimit)
+  - [Setup: Postfix](#setup-postfix)
+    - [SendGrid API Key](#sendgrid-api-key)
+    - [postfix main.cf](#postfix-maincf)
+    - [reload postfix](#reload-postfix)
+  - [Setup: easyrsa](#setup-easyrsa)
+    - [Install easyrsa](#install-easyrsa)
+    - [easyrsa init-pki](#easyrsa-init-pki)
+    - [easyrsa build-ca](#easyrsa-build-ca)
+    - [easyrsa build-server-full](#easyrsa-build-server-full)
+    - [easyrsa gen-dh](#easyrsa-gen-dh)
+- [Usage](#usage)
 
 <!-- mtoc-end -->
 
@@ -38,6 +39,7 @@
 - curl
 - jq
 - postfix
+- libsasl2-modules
 - openvpn
 - wireguard
 - sqlite3
@@ -63,7 +65,7 @@
 
 ```bash
 apt update && apt upgrade
-apt install curl jq postfix openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng
+apt install curl jq postfix libsasl2-modules openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng
 ```
 
 ### Setup: ssh-keygen for github
@@ -128,7 +130,7 @@ sudo dpkg -i tmp/${deb}
 ```bash
 cd /opt/grasys-vpn-management
 if [ ! -L /etc/sysctl.d/99_grasys_vpn.conf ]; then
-  ln -s /opt/grasys-vpn-management/etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
+  ln -s etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
 fi
 sysctl -p
 ```
@@ -138,7 +140,7 @@ sysctl -p
 ```bash
 cd /opt/grasys-vpn-management
 if [ ! -L /etc/security/limits.d/99_unlimited.conf ]; then
-  ln -s /opt/grasys-vpn-management/etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
+  ln -s etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
 fi
 ulimit -a
 ```

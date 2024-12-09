@@ -255,3 +255,28 @@ cat pki/dh.pem
 ```
 
 ## Usage
+
+### init
+
+- directory生成
+- install mustache
+- load mustache
+- create sqlite3 clients database
+- insert wireguard ipv4 range ip addresses
+- insert wireguard ipv6 range ip addresses
+
+```bash
+argc init
+```
+
+生成されたclients.sqlite3の確認
+
+```bash
+sqlite3 data/clients.sqlite3 "SELECT * FROM wireguard_ipv4"
+sqlite3 data/clients.sqlite3 "SELECT * FROM wireguard_ipv6"
+
+sqlite3 data/clients.sqlite3 "SELECT count(*) FROM wireguard_ipv4"
+sqlite3 data/clients.sqlite3 "SELECT count(*) FROM wireguard_ipv6"
+```
+
+

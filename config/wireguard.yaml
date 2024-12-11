@@ -7,6 +7,6 @@ ipv4:
   netmask: 255.255.255.0
 
 ipv6:
-  network: fd00:abcd:1234::1
+  network: fd00:abcd:1234::0
   netmask: 120
 

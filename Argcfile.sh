@@ -152,13 +152,44 @@ function _insert_wireguard_ipv6() {
   done
 }
 
+function _generate_wireguard_server_interface_part_config() {
+  _info "generate wireguard server config"
+
+  server_ipv4=192.168.242.1
+  server_ipv6=fd00:abcd:1234::1
+  server_port=59820
+  server_private_key=SERVER_PRIVATE_KEY
+  server_public_key=SERVER_PUBLIC_KEY
+
+  echo $(mo templates/wireguard/server.conf)
+}
+
+function _generate_wireguard_server_peer_part_config() {
+  _info "generate wireguard server peer part config"
+  echo $(mo templates/wireguard/server_peer_part.conf)
+}
+
+function _generate_wireguard_client_config() {
+  _info "generate wireguard client config"
+
+  client_ipv4=192.168.242.2
+  client_ipv6=fd00:abcd:1234::2
+  client_private_key=CLIENT_PRIVATE_KEY
+  client_public_key=CLIENT_PUBLIC_KEY
+
+  echo $(mo templates/wireguard/client.conf)
+}
+
 ###############################################################################
 ### argc sub-commands
 # @cmd debug
 debug() {
   _load_mustache
-  _insert_wireguard_ipv4
-  _insert_wireguard_ipv6
+#  _insert_wireguard_ipv4
+#  _insert_wireguard_ipv6
+  _generate_wireguard_server_interface_part_config
+  _generate_wireguard_server_peer_part_config
+  _generate_wireguard_client_config
 }
 
 # @cmd cleanup
@@ -178,7 +209,7 @@ init() {
   _load_mustache
   _create_sqlite
   _insert_wireguard_ipv4
-  #_insert_wireguard_ipv6
+  _insert_wireguard_ipv6
 }
 
 # @cmd setup wireguard

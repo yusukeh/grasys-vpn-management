@@ -152,32 +152,100 @@ function _insert_wireguard_ipv6() {
   done
 }
 
-function _generate_wireguard_server_interface_part_config() {
-  _info "generate wireguard server config"
+function _insert_client() {
+  _info "add client / create user"
 
-  server_ipv4=192.168.242.1
-  server_ipv6=fd00:abcd:1234::1
-  server_port=59820
-  server_private_key=SERVER_PRIVATE_KEY
-  server_public_key=SERVER_PUBLIC_KEY
+  email=$1
+  private_key=$(wg genkey)
+  public_key=$(echo $private_key | wg pubkey)
 
-  echo $(mo templates/wireguard/server.conf)
+  sql=$(mo templates/sqlite3/insert_client.sql)
+  sqlite3 ${database} "${sql}"
 }
 
-function _generate_wireguard_server_peer_part_config() {
-  _info "generate wireguard server peer part config"
-  echo $(mo templates/wireguard/server_peer_part.conf)
+# for config
+function _generate_wireguard_server_interface_part_config() {
+  _info "generate wireguard server interface part config"
+
+  email="root"
+
+  _insert_client $email
+  sql=$(mo templates/sqlite3/select_ipaddr4.sql)
+  server_ipv4=$(sqlite3 ${database} "${sql}")
+  sql=$(mo templates/sqlite3/select_ipaddr6.sql)
+  server_ipv6=$(sqlite3 ${database} "${sql}")
+  server_port=$(yq -r .port < ${config_wireguard})
+  sql=$(mo templates/sqlite3/select_private_key.sql)
+  server_private_key=$(sqlite3 ${database} "${sql}")
+
+  # ToDo
+  cat templates/wireguard/server.conf | mo > /tmp/server_interface_part.conf
 }
 
 function _generate_wireguard_client_config() {
   _info "generate wireguard client config"
 
-  client_ipv4=192.168.242.2
-  client_ipv6=fd00:abcd:1234::2
-  client_private_key=CLIENT_PRIVATE_KEY
-  client_public_key=CLIENT_PUBLIC_KEY
+  email=$1
 
-  echo $(mo templates/wireguard/client.conf)
+  if [ "$1" = "" ]
+  then
+    return
+  fi
+
+#  _insert_client $email
+  sql=$(mo templates/sqlite3/select_ipaddr4.sql)
+  client_ipv4=$(sqlite3 ${database} "${sql}")
+  sql=$(mo templates/sqlite3/select_ipaddr6.sql)
+  client_ipv6=$(sqlite3 ${database} "${sql}")
+  sql=$(mo templates/sqlite3/select_private_key.sql)
+  client_private_key=$(sqlite3 ${database} "${sql}")
+  sql=$(mo templates/sqlite3/select_public_key.sql)
+  client_public_key=$(sqlite3 ${database} "${sql}")
+  sql=$(mo templates/sqlite3/select_client_id.sql)
+  client_0id=$(printf "%03d" $(sqlite3 ${database} "${sql}"))
+
+  email="root"
+  sql=$(mo templates/sqlite3/select_public_key.sql)
+  server_public_key=$(sqlite3 ${database} "${sql}")
+  sql=$(mo templates/sqlite3/select_ipaddr4.sql)
+  server_ipv4=$(sqlite3 ${database} "${sql}")
+  sql=$(mo templates/sqlite3/select_ipaddr6.sql)
+  server_ipv6=$(sqlite3 ${database} "${sql}")
+  server_port=$(yq -r .port < ${config_wireguard})
+
+  # ToDo
+  cat templates/wireguard/client.conf | mo > /tmp/client${client_0id}.conf
+}
+
+function _generate_wireguard_server_peer_part_config() {
+  _info "generate wireguard server peer part config"
+
+  if [ "${client_0id}" = "" ]
+  then
+    return
+  fi
+
+#  client_public_key=$(sqlite3 ${database} "${sql}")
+#  client_ipv4=$(sqlite3 ${database} "${sql}")
+#  client_ipv6=$(sqlite3 ${database} "${sql}")
+
+  # ToDo
+  cat templates/wireguard/server_peer_part.conf | mo > /tmp/server_peer_part${client_0id}.conf
+}
+
+function _concatenate_wireguard_server_config() {
+  _info "concatenate wireguard server config"
+
+  # ToDo
+  cat /tmp/server_interface_part.conf /tmp/server_peer_part*.conf > /etc/wireguard/wg0.conf
+}
+
+function _reload_wireguard_server_config() {
+  _info "reload wireguard server config"
+
+  wg-quick down wg0
+  _concatenate_wireguard_server_config
+  wg-quick up wg0
 }
 
 ###############################################################################
@@ -187,9 +255,11 @@ debug() {
   _load_mustache
 #  _insert_wireguard_ipv4
 #  _insert_wireguard_ipv6
-  _generate_wireguard_server_interface_part_config
-  _generate_wireguard_server_peer_part_config
+
   _generate_wireguard_client_config
+  _generate_wireguard_server_peer_part_config
+#  _concatenate_wireguard_server_config
+  _reload_wireguard_server_config
 }
 
 # @cmd cleanup
@@ -210,6 +280,7 @@ init() {
   _create_sqlite
   _insert_wireguard_ipv4
   _insert_wireguard_ipv6
+  _generate_wireguard_server_interface_part_config
 }
 
 # @cmd setup wireguard

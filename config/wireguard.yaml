@@ -1,12 +1,12 @@
 # wireguard
 interface: wg0
-port: 52202
+port: 59820
 
 ipv4: 
-  network: 192.168.241.0
+  network: 192.168.242.0
   netmask: 255.255.255.0
 
 ipv6:
-  network: fd00:abcd:1234::0
+  network: fd00::c0a8:f200
   netmask: 120
 

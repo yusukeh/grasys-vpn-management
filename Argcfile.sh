@@ -196,7 +196,8 @@ function _generate_wireguard_client_config() {
 
   email=$1
 
-  _insert_client $email
+  # temp
+#  _insert_client $email
   sql=$(mo templates/sqlite3/select_ipaddr4.sql)
   client_ipv4=$(sqlite3 ${database} "${sql}")
   sql=$(mo templates/sqlite3/select_ipaddr6.sql)
@@ -310,25 +311,15 @@ create_user() {
     echo 'nomail'
   else
     MAIL_BOUNDARY=`date +%Y%m%d%H%M%N`
-    sendmail ${argc_user} -f root@grasys.io -i <<EOL
-MIME-Version: 1.0
-Content-type: multipart/mixed; boundary=${MAIL_BOUNDARY}
-Content-Transfer-Encoding: 7bit
-Subject: WireGuard VPN Client Config
---${MAIL_BOUNDARY}
-Content-type: text/plain; charset=iso-2022-jp
-Content-Transfer-Encoding: 7bit
-
-https://docs.google.com/document/d/1u6b0BBJso-wbdOypc7vVJ59xg_Cs6R3XtAJ4X4T21kU
-
---${MAIL_BOUNDARY}
-Content-type: text/plain; charset=UTF-8
-Content-Disposition: attachment;
- filename=grasys_vpn.conf
-
-`cat ${client_config_path}`
-
-EOL
+    mail_from="grasys WireGuard Service <noreply@grasys.io>"
+    mail_to="${argc_user}"
+    mail_cc=""
+    mail_bcc=""
+    mail_subject="WireGuard VPN Client Config"
+    mail_boundary=`date +%Y%m%d%H%M%N`
+    mail_attachment=`cat ${client_config_path}`
+    cat templates/postfix/sendmail_to_user.tmpl | mo | sendmail -t
+#    cat templates/postfix/sendmail_to_user.tmpl | mo
   fi
 }
 

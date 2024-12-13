@@ -74,6 +74,10 @@ function _init_dirs() {
     _info "mkdir data/users"
     mkdir -p data/users
   fi
+  if [ ! -d data/server_config_parts ]; then
+    _info "mkdir data/server_config_parts"
+    mkdir -p data/server_config_parts
+  fi
   if [ ! -d contrib ]; then
     _info "mkdir contrib"
     mkdir -p contrib
@@ -153,7 +157,7 @@ function _insert_wireguard_ipv6() {
 }
 
 function _insert_client() {
-  _info "add client / create user"
+  _info "insert client"
 
   email=$1
   private_key=$(wg genkey)
@@ -179,20 +183,20 @@ function _generate_wireguard_server_interface_part_config() {
   server_private_key=$(sqlite3 ${database} "${sql}")
 
   # ToDo
-  cat templates/wireguard/server.conf | mo > /tmp/server_interface_part.conf
+  cat templates/wireguard/server.conf | mo > data/server_config_parts/server_interface_part.conf
 }
 
 function _generate_wireguard_client_config() {
   _info "generate wireguard client config"
-
-  email=$1
 
   if [ "$1" = "" ]
   then
     return
   fi
 
-#  _insert_client $email
+  email=$1
+
+  _insert_client $email
   sql=$(mo templates/sqlite3/select_ipaddr4.sql)
   client_ipv4=$(sqlite3 ${database} "${sql}")
   sql=$(mo templates/sqlite3/select_ipaddr6.sql)
@@ -213,8 +217,12 @@ function _generate_wireguard_client_config() {
   server_ipv6=$(sqlite3 ${database} "${sql}")
   server_port=$(yq -r .port < ${config_wireguard})
 
+  endpoint_ipv4=$(curl -4 ipconfig.io)
+  endpoint_ipv6=$(curl -6 ipconfig.io)
+
   # ToDo
-  cat templates/wireguard/client.conf | mo > /tmp/client${client_0id}.conf
+  cat templates/wireguard/client.conf | mo > data/users/client${client_0id}.conf
+  client_config_path="data/users/client${client_0id}.conf"
 }
 
 function _generate_wireguard_server_peer_part_config() {
@@ -230,14 +238,13 @@ function _generate_wireguard_server_peer_part_config() {
 #  client_ipv6=$(sqlite3 ${database} "${sql}")
 
   # ToDo
-  cat templates/wireguard/server_peer_part.conf | mo > /tmp/server_peer_part${client_0id}.conf
+  cat templates/wireguard/server_peer_part.conf | mo > data/server_config_parts/server_peer_part${client_0id}.conf
 }
 
 function _concatenate_wireguard_server_config() {
   _info "concatenate wireguard server config"
 
-  # ToDo
-  cat /tmp/server_interface_part.conf /tmp/server_peer_part*.conf > /etc/wireguard/wg0.conf
+  cat data/server_config_parts/{server_interface_part.conf,server_peer_part*.conf} > /etc/wireguard/wg0.conf
 }
 
 function _reload_wireguard_server_config() {
@@ -253,13 +260,6 @@ function _reload_wireguard_server_config() {
 # @cmd debug
 debug() {
   _load_mustache
-#  _insert_wireguard_ipv4
-#  _insert_wireguard_ipv6
-
-  _generate_wireguard_client_config
-  _generate_wireguard_server_peer_part_config
-#  _concatenate_wireguard_server_config
-  _reload_wireguard_server_config
 }
 
 # @cmd cleanup
@@ -294,13 +294,52 @@ setup_openvpn() {
 }
 
 # @cmd create user
-# @option --user!
+# @option -u --user!
+# @flag -n --nomail
 create_user() {
   _info "Create User"
 
-  _debug "${argc_user}"
+  _load_mustache
+  _generate_wireguard_client_config ${argc_user} # Return: client_config_path
+  _generate_wireguard_server_peer_part_config
+  _concatenate_wireguard_server_config
+  _reload_wireguard_server_config
+
+  if [ "${argc_nomail}" = "1" ]
+  then
+    echo 'nomail'
+  else
+    MAIL_BOUNDARY=`date +%Y%m%d%H%M%N`
+    sendmail ${argc_user} -f root@grasys.io -i <<EOL
+MIME-Version: 1.0
+Content-type: multipart/mixed; boundary=${MAIL_BOUNDARY}
+Content-Transfer-Encoding: 7bit
+Subject: WireGuard VPN Client Config
+--${MAIL_BOUNDARY}
+Content-type: text/plain; charset=iso-2022-jp
+Content-Transfer-Encoding: 7bit
+
+https://docs.google.com/document/d/1u6b0BBJso-wbdOypc7vVJ59xg_Cs6R3XtAJ4X4T21kU
+
+--${MAIL_BOUNDARY}
+Content-type: text/plain; charset=UTF-8
+Content-Disposition: attachment;
+ filename=grasys_vpn.conf
+
+`cat ${client_config_path}`
+
+EOL
+  fi
 }
 
+# @cmd show_users
+show_users() {
+  _info "Show Users"
+
+  # ToDo
+  sqlite3 ${database} < sql/select_show_users.sql
+
+}
 
 ###############################################################################
 # See more details at https://github.com/sigoden/argc

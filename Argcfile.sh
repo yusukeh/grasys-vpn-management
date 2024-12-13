@@ -196,8 +196,7 @@ function _generate_wireguard_client_config() {
 
   email=$1
 
-  # temp
-#  _insert_client $email
+  _insert_client $email
   sql=$(mo templates/sqlite3/select_ipaddr4.sql)
   client_ipv4=$(sqlite3 ${database} "${sql}")
   sql=$(mo templates/sqlite3/select_ipaddr6.sql)

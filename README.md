@@ -313,7 +313,7 @@ systemctl enable wg-quick@${interface}
 systemctl status wg-quick@${interface}
 ```
 
-> [!TIPS]
+> [!TIP]
 > systemctl edit wg-quick@${interface}
 > このコマンドでService SectionのLimitNOFILEを修正します。
 

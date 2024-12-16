@@ -20,12 +20,6 @@
     * [postfix main.cf](#postfix-maincf)
     * [reload postfix](#reload-postfix)
     * [test e-mail](#test-e-mail)
-  * [Setup: easyrsa](#setup-easyrsa)
-    * [Install easyrsa](#install-easyrsa)
-    * [easyrsa init-pki](#easyrsa-init-pki)
-    * [easyrsa build-ca](#easyrsa-build-ca)
-    * [easyrsa build-server-full](#easyrsa-build-server-full)
-    * [easyrsa gen-dh](#easyrsa-gen-dh)
 * [Usage](#usage)
   * [init](#init)
 
@@ -46,11 +40,8 @@ grasys Incのwireguardを管理するツールです。
 - jq
 - postfix
 - libsasl2-modules
-- openvpn
 - wireguard
 - sqlite3
-- easy-rsa
-- expect
 - net-tools
 - ipcalc-ng
 
@@ -60,7 +51,7 @@ grasys Incのwireguardを管理するツールです。
 > - [argc](https://github.com/sigoden/argc) が必須です。
 > - [mustache](https://mustache.github.io/) のbash用である [mo](https://github.com/tests-always-included/mo) が必須です。
 > - [pastel](https://github.com/sharkdp/pastel) が使われています。（長谷川の趣味です・・・）
-> - openvpn/wireguardのclient configを配布するためにPostfixとSendGrid APIが必須です。
+> - wireguardのclient configを配布するためにPostfixとSendGrid APIが必須です。
 
 ## Setup
 
@@ -71,7 +62,7 @@ grasys Incのwireguardを管理するツールです。
 
 ```bash
 apt update && apt upgrade
-apt install curl jq yq postfix libsasl2-modules openvpn wireguard sqlite3 easy-rsa expect net-tools ipcalc-ng neovim
+apt install curl jq yq wireguard sqlite3 net-tools ipcalc-ng neovim
 ```
 
 ### Setup: ssh-keygen for github
@@ -216,63 +207,6 @@ Subject: test e-mail from ${HOSTNAME}
 ${HOSTNAME}
 test e-mail
 EOL
-```
-
-### Setup: easyrsa
-
-#### Install easyrsa
-
-```bash
-apt install easy-rsa expect
-```
-
-#### easyrsa init-pki
-
-```bash
-cd /opt/grasys-vpn-management
-/usr/share/easy-rsa/easyrsa init-pki
-```
-
-#### easyrsa build-ca
-
-```bash
-cd /opt/grasys-vpn-management
-
-expect -c "
-set timeout -1
-spawn /usr/share/easy-rsa/easyrsa build-ca nopass
-expect \"Easy-RSA CA\"
-send \"grasys\n\"
-interact
-"
-
-openssl x509 -in pki/ca.crt -text -noout | grep grasys
-cat pki/ca.crt
-```
-
-#### easyrsa build-server-full
-
-```bash
-cd /opt/grasys-vpn-management
-
-expect -c "
-spawn /usr/share/easy-rsa/easyrsa build-server-full server nopass
-expect \"Confirm request details\"
-send \"yes\n\"
-interact
-"
-
-openssl rsa -in pki/private/server.key -text -noout
-cat pki/private/server.key
-```
-
-#### easyrsa gen-dh
-
-```bash
-/usr/share/easy-rsa/easyrsa gen-dh
-
-openssl dhparam -in pki/dh.pem -text -noout
-cat pki/dh.pem
 ```
 
 ## Usage

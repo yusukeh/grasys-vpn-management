@@ -12,15 +12,19 @@
     * [create .gitconfig](#create-gitconfig)
     * [ssh key generate](#ssh-key-generate)
     * [create ssh config for github](#create-ssh-config-for-github)
+    * [git authentication test](#git-authentication-test)
+    * [git clone](#git-clone)
   * [Setup: argc](#setup-argc)
   * [Setup: pastel](#setup-pastel)
   * [Setup: sysctl](#setup-sysctl)
+  * [Setup: pam](#setup-pam)
   * [Setup: ulimit](#setup-ulimit)
   * [Setup: Postfix](#setup-postfix)
     * [SendGrid API Key](#sendgrid-api-key)
     * [postfix main.cf](#postfix-maincf)
     * [reload postfix](#reload-postfix)
     * [test e-mail](#test-e-mail)
+  * [systemctl wg-quick@wg0](#systemctl-wg-quickwg0)
 * [Usage](#usage)
   * [init](#init)
 
@@ -108,6 +112,31 @@ EOL
 fi
 ```
 
+#### git authentication test
+
+> [!IMPORTANT]
+> 20241216時点でのrepositoryは[yusukeh/grasys-vpn-management](https://github.com/yusukeh/grasys-vpn-management)となっているため、gitの権限追加はyusukehに伝えてください。
+
+```bash
+git -T git@github.com
+```
+
+> [!TIP]
+> もしErrorが出るなら
+
+```bash
+git -vvvv -T git@github.com
+```
+
+#### git clone
+
+```bash
+if [ ! -d /opt/grasys-vpn-management ]; then
+  git clone git@github.com:yusukeh/grasys-vpn-management.git /opt/grasys-vpn-management
+fi
+cd /opt/grasys-vpn-management
+```
+
 ### Setup: argc
 
 [GitHub sigoden/argc - Pre-bulld Binaries](https://github.com/sigoden/argc?tab=readme-ov-file#pre-built-binaries)
@@ -116,6 +145,9 @@ fi
 curl -fsSL https://raw.githubusercontent.com/sigoden/argc/main/install.sh | \
   sudo sh -s -- --to /usr/local/bin
 ```
+
+> [!TIP]
+> 確認コマンドは以下
 
 ```bash
 which argc
@@ -135,14 +167,52 @@ curl -fsSL -o tmp/${deb} ${url}
 sudo dpkg -i tmp/${deb}
 ```
 
+> [!TIP]
+> 確認コマンドは以下
+
+```bash
+which pastel
+```
+
 ### Setup: sysctl
+
+> [!IMPORTANT]
+> /opt/grasys-vpn-management/etc/sysctl.d/99_grasys_vpn.confの中身を良く確認しましょう。
 
 ```bash
 cd /opt/grasys-vpn-management
 if [ ! -L /etc/sysctl.d/99_grasys_vpn.conf ]; then
   ln -s /opt/grasys-vpn-management/etc/sysctl.d/99_grasys_vpn.conf /etc/sysctl.d/99_grasys_vpn.conf
 fi
-sysctl -p
+sysctl --system
+```
+
+> [!TIP]
+> 確認コマンドは以下
+
+```bash
+for s in $(cat etc/sysctl.d/99_grasys_vpn.conf | grep -v "^$" | awk -F'=' '{print $1}');
+do
+  sysctl $s
+done
+```
+
+### Setup: pam
+
+> [!IMPORTANT]
+> けっこう危険なので気を付けてｗ
+
+```bash
+declare pam_files=(/etc/pam.d/common-session /etc/pam.d/common-session-noninteractive)
+for f in ${pam_files[@]}
+do
+  grep "session required ppam_limits.so" ${f} &> /dev/null
+  res=$?
+  if [ $res -ne 0 ]; then
+    echo "session required pam_limits.so" >> ${f}
+    cat ${f}
+  fi
+done
 ```
 
 ### Setup: ulimit
@@ -167,6 +237,9 @@ sudo apt install postfix libsasl2-modules
 
 - SendGridのAPIKeyを取得し、以下の環境変数SENDGRID_APIKEYにsetして以下を発行して下さい。
 - mustacheをinstallする必要があります。
+
+> [!IMPORTANT]
+> SENDGRID API Keyは社内でも権限を持っている人が少ないため、CIのリーダー格以上、Managerラインに聞いてください。
 
 ```bash
 argc install_mustache
@@ -229,6 +302,30 @@ Subject: test e-mail from ${HOSTNAME}
 ${HOSTNAME}
 test e-mail
 EOL
+```
+
+### systemctl wg-quick@wg0
+
+```bash
+cd /opt/grasys-vpn-management
+declare interface=$(yq -r .interface config/wireguard.yaml)
+systemctl enable wg-quick@${interface}
+systemctl status wg-quick@${interface}
+```
+
+> [!TIPS]
+> systemctl edit wg-quick@${interface}
+> このコマンドでService SectionのLimitNOFILEを修正します。
+
+```bash
+cd /opt/grasys-vpn-management
+declare interface=$(yq -r .interface config/wireguard.yaml)
+vi /etc/systemd/system/multi-user.target.wants/wg-quick@wg0.service
+```
+
+```bash
+[Service]
+LimitNOFILE=65535
 ```
 
 ## Usage

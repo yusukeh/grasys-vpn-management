@@ -168,6 +168,9 @@ if [ -d /etc/postfix -a ! -f /etc/postfix/sasl_passwd ]; then
 fi
 
 postmap /etc/postfix/sasl_passwd
+if [ ! -f /etc/postfix/sasl_passwd.db ]; then
+  echo "/etc/postfix/sasl_passwd.db not exists."
+fi
 ```
 
 #### postfix main.cf

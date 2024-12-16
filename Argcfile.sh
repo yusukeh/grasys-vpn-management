@@ -250,9 +250,9 @@ function _concatenate_wireguard_server_config() {
 function _reload_wireguard_server_config() {
   _info "reload wireguard server config"
 
-  wg-quick down wg0
+  systemctl stop wg-quick@wg0
   _concatenate_wireguard_server_config
-  wg-quick up wg0
+  systemctl start wg-quick@wg0
 }
 
 ###############################################################################

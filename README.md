@@ -36,12 +36,16 @@ grasys Incのwireguardを管理するツールです。
 
 基本的にはCommand-Lineのみのツールになっています。
 
+ToDo: 運用管理用のREADME-ops.md を作成し、ここにリンク予定
+
 ## Requirements
 
 - [argc](https://github.com/sigoden/argc)
 - [mustache for bash](https://github.com/tests-always-included/mo)
 - [pastel](https://github.com/sharkdp/pastel)
 - curl
+- git
+- iptables
 - jq
 - postfix
 - libsasl2-modules
@@ -52,7 +56,7 @@ grasys Incのwireguardを管理するツールです。
 
 > [!IMPORTANT]
 >
-> - 2024/12/05 時点でのGoogle Compute EngineのUbuntu 2404 LTS Minimul Imageをベースにしています。
+> - 2024/12/05 時点でのGoogle Compute EngineのUbuntu 24.04 LTS Minimal Imageをベースにしています。
 > - [argc](https://github.com/sigoden/argc) が必須です。
 > - [mustache](https://mustache.github.io/) のbash用である [mo](https://github.com/tests-always-included/mo) が必須です。
 > - [pastel](https://github.com/sharkdp/pastel) が使われています。（長谷川の趣味です・・・）
@@ -67,7 +71,7 @@ grasys Incのwireguardを管理するツールです。
 
 ```bash
 apt update && apt upgrade
-apt install curl jq yq wireguard sqlite3 net-tools ipcalc-ng neovim
+apt install curl git iptables jq yq wireguard sqlite3 net-tools ipcalc-ng neovim
 ```
 
 ### Setup: ssh-keygen for github
@@ -84,6 +88,8 @@ cat ${HOME}/.gitconfig
 ```
 
 #### ssh key generate
+> [!TIP]
+> 鍵生成(次のコマンド実行)時に暗号化保存のためのパスプレーズ(passphrase)が質問されますが、何も入力せずEnter のみ入力することで暗号化されない(使用時にパスフレーズ不要)鍵が生成されます。
 
 ```bash
 type=ed25519
@@ -228,6 +234,10 @@ ulimit -a
 ### Setup: Postfix
 
 [Google Cloud Compute Engine - Sending Email - Using SendGrid with Postfix](https://cloud.google.com/compute/docs/tutorials/sending-mail/using-sendgrid?hl=ja)
+
+> [!TIP]
+> Postfix パッケージ(メール転送エージェント)をインストールする際、対話的に事前設定項目を質問されるので「5. Local only」など適宜回答して進みます。
+> ToDo: 回答項目を手順に盛り込む
 
 ```bash
 sudo apt install postfix libsasl2-modules

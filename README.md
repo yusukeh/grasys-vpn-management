@@ -74,6 +74,10 @@ apt update && apt upgrade
 apt install curl git iptables jq yq wireguard sqlite3 net-tools ipcalc-ng neovim
 ```
 
+```bash
+reboot
+```
+
 ### Setup: ssh-keygen for github
 
 #### create .gitconfig

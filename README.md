@@ -196,7 +196,13 @@ fi
 #### reload postfix
 
 ```bash
-/etc/init.d/postfix reload
+if [ -f /etc/postfix/sasl_passwd.db ]; then
+  /etc/init.d/postfix reload
+else
+  echo "/etc/postfix/sasl_passwd.db not exist."
+  echo "  just run"
+  echo "  postmap /etc/postfix/sasl_passwd"
+fi
 ```
 
 #### test e-mail

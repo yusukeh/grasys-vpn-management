@@ -9,6 +9,7 @@
 * [Setup](#setup)
   * [Setup: apt](#setup-apt)
   * [Setup: ssh-keygen for github](#setup-ssh-keygen-for-github)
+    * [create .gitconfig](#create-gitconfig)
     * [ssh key generate](#ssh-key-generate)
     * [create ssh config for github](#create-ssh-config-for-github)
   * [Setup: argc](#setup-argc)
@@ -67,13 +68,25 @@ apt install curl jq yq wireguard sqlite3 net-tools ipcalc-ng neovim
 
 ### Setup: ssh-keygen for github
 
+#### create .gitconfig
+
+```bash
+git_user="XXXXXXXXXX"
+git_email="xxxxxx@grasys.io"
+git config --global user.name "${git_user}"
+git config --global user.email "${git_email}"
+
+cat ${HOME}/.gitconfig
+```
+
 #### ssh key generate
 
 ```bash
 type=ed25519
 sshkey=grasys_girhub.id_${type}
+comment="$(git config user.name) <$(git config user.email)> created at $(date +%Y%m%d)"
 if [ ! -f ${HOME}/.ssh/${sshkey} ]; then
-  ssh-keygen -t ${type} -f ${HOME}/.ssh/${sshkey}
+  ssh-keygen -t ${type} -C "${comment}" -f ${HOME}/.ssh/${sshkey}
 fi
 ```
 

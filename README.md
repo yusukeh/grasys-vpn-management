@@ -337,8 +337,8 @@ fi
 ```bash
 if [ ! -f /etc/postfix/main.cf.bak ]; then
   cp -p /etc/postfix/main.cf /etc/postfix/main.cf.bak
-  sed -e "s/^default_transport = error$/#default_transport = error/m" /etc/postfix/main.cf > /etc/postfix/main.cf
-  sed -e "s/^relay_transport = error$/#relay_transport = error/m" /etc/postfix/main.cf > /etc/postfix/main.cf
+  sed -e "s/^default_transport = error$/#default_transport = error/m" /etc/postfix/main.cf > /etc/postfix/main.cf.tmp
+  sed -e "s/^relay_transport = error$/#relay_transport = error/m" /etc/postfix/main.cf.tmp > /etc/postfix/main.cf
   cat <<EOL >> /etc/postfix/main.cf
 
 # for SendGrid

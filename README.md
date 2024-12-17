@@ -181,20 +181,29 @@ EOL
 fi
 ```
 
+### add ssh public key for github
+
+> [!TIP]
+> 生成された鍵でGithub にアクセスできるよう,公開鍵(次のコマンドで表示されるもの)を登録します。
+
+```bash
+cat .ssh/grasys_girhub.id_ed25519.pub
+```
+
 #### git authentication test
 
 > [!IMPORTANT]
-> 20241216時点でのrepositoryは[yusukeh/grasys-vpn-management](https://github.com/yusukeh/grasys-vpn-management)となっているため、gitの権限追加はyusukehに伝えてください。
+> 2024/12/16時点でのrepositoryは[yusukeh/grasys-vpn-management](https://github.com/yusukeh/grasys-vpn-management)となっているため、gitの権限追加はyusukehに伝えてください。
 
 ```bash
-git -T git@github.com
+ssh -T git@github.com
 ```
 
 > [!TIP]
 > もしErrorが出るなら
 
 ```bash
-git -vvvv -T git@github.com
+ssh -vvvv -T git@github.com
 ```
 
 #### git clone

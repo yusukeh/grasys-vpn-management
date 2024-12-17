@@ -11,7 +11,7 @@ gcloud compute ssh dualstack-vpn-server --zone 'asia-northeast1-b' --project 'tr
 
 ## 管理者ユーザ(root)昇格
 ```sh
-sudo su
+sudo su -
 ```
 以降root での作業前提
 ## 作業ディレクトリへの移動

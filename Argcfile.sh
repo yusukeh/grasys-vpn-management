@@ -182,7 +182,6 @@ function _generate_wireguard_server_interface_part_config() {
   sql=$(mo templates/sqlite3/select_private_key.sql)
   server_private_key=$(sqlite3 ${database} "${sql}")
 
-  # ToDo
   cat templates/wireguard/server.conf | mo > data/server_config_parts/server_interface_part.conf
 }
 
@@ -220,9 +219,13 @@ function _generate_wireguard_client_config() {
   endpoint_ipv4=$(curl -4 ipconfig.io)
   endpoint_ipv6=$(curl -6 ipconfig.io)
 
-  # ToDo
-  cat templates/wireguard/client.conf | mo > data/users/client${client_0id}.conf
-  client_config_path="data/users/client${client_0id}.conf"
+  endpoint=${endpoint_ipv4}
+  cat templates/wireguard/client.conf | mo > data/users/client${client_0id}_ipv4.conf
+  client_config_path_ipv4="data/users/client${client_0id}_ipv4.conf"
+
+  endpoint="[${endpoint_ipv6}]"
+  cat templates/wireguard/client.conf | mo > data/users/client${client_0id}_ipv6.conf
+  client_config_path_ipv6="data/users/client${client_0id}_ipv6.conf"
 }
 
 function _generate_wireguard_server_peer_part_config() {
@@ -237,7 +240,6 @@ function _generate_wireguard_server_peer_part_config() {
 #  client_ipv4=$(sqlite3 ${database} "${sql}")
 #  client_ipv6=$(sqlite3 ${database} "${sql}")
 
-  # ToDo
   cat templates/wireguard/server_peer_part.conf | mo > data/server_config_parts/server_peer_part${client_0id}.conf
 }
 
@@ -264,6 +266,7 @@ debug() {
 
 # @cmd cleanup
 clean() {
+  systemctl stop wg-quick@wg0
   _clean
 }
 
@@ -281,6 +284,7 @@ init() {
   _insert_wireguard_ipv4
   _insert_wireguard_ipv6
   _generate_wireguard_server_interface_part_config
+  _reload_wireguard_server_config
 }
 
 # @cmd setup wireguard
@@ -316,9 +320,11 @@ create_user() {
     mail_bcc=""
     mail_subject="WireGuard VPN Client Config"
     mail_boundary=`date +%Y%m%d%H%M%N`
-    mail_attachment=`cat ${client_config_path}`
+    mail_attachment1_filename="gratunl_ipv4.conf"
+    mail_attachment1=`cat ${client_config_path_ipv4}`
+    mail_attachment2_filename="gratunl_ipv6.conf"
+    mail_attachment2=`cat ${client_config_path_ipv6}`
     cat templates/postfix/sendmail_to_user.tmpl | mo | sendmail -t
-#    cat templates/postfix/sendmail_to_user.tmpl | mo
   fi
 }
 
@@ -326,7 +332,6 @@ create_user() {
 show_users() {
   _info "Show Users"
 
-  # ToDo
   sqlite3 ${database} < sql/select_show_users.sql
 
 }

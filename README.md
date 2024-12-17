@@ -36,7 +36,7 @@ grasys Incのwireguardを管理するツールです。
 
 基本的にはCommand-Lineのみのツールになっています。
 
-ToDo: 運用管理用のREADME-ops.md を作成し、ここにリンク予定
+運用管理用マニュアルは[こちら](README-ops.md)から
 
 ## Requirements
 

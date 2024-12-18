@@ -167,6 +167,15 @@ function _insert_client() {
   sqlite3 ${database} "${sql}"
 }
 
+function _delete_client() {
+  _info "delete client"
+
+  email=$1
+
+  sql=$(mo templates/sqlite3/delete_client.sql)
+  sqlite3 ${database} "${sql}"
+}
+
 # for config
 function _generate_wireguard_server_interface_part_config() {
   _info "generate wireguard server interface part config"
@@ -326,6 +335,23 @@ create_user() {
     mail_attachment2=`cat ${client_config_path_ipv6}`
     cat templates/postfix/sendmail_to_user.tmpl | mo | sendmail -t
   fi
+}
+
+# @cmd create user
+# @option -u --user!
+delete_user() {
+  _info "Delete User"
+
+  _load_mustache
+  email=${argc_user}
+  sql=$(mo templates/sqlite3/select_client_id.sql)
+  client_0id=$(printf "%03d" $(sqlite3 ${database} "${sql}"))
+  rm data/server_config_parts/server_peer_part${client_0id}.conf
+  rm data/users/client${client_0id}_ipv4.conf
+  rm data/users/client${client_0id}_ipv6.conf
+  _concatenate_wireguard_server_config
+  _reload_wireguard_server_config
+  _delete_client ${argc_user}
 }
 
 # @cmd show_users

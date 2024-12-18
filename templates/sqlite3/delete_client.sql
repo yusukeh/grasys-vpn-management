@@ -1,3 +1,3 @@
-SELECT id
+DELETE
 FROM clients 
 WHERE email = '{{email}}'

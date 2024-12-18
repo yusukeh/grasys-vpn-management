@@ -62,3 +62,11 @@ argc create_user
   --user ${user_email}
   --nomail
 ```
+
+## ユーザ削除
+```sh
+user_email="ito+test@grasys.io"
+
+argc delete_user
+  --user ${user_email}
+```

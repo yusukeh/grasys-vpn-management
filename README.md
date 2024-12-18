@@ -37,7 +37,7 @@ grasys Incのwireguardを管理するツールです。
 
 基本的にはCommand-Lineのみのツールになっています。
 
-* Instancei 作成 [README-instance.md](README-instance.md)
+* Instance 作成 [README-instance.md](README-instance.md)
 * 運用管理用マニュアル [README-ops.md](README-ops.md)
 
 ## Requirements

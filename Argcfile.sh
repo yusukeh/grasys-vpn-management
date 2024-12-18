@@ -266,6 +266,21 @@ function _reload_wireguard_server_config() {
   systemctl start wg-quick@wg0
 }
 
+function _sendmail_client_config() {
+    MAIL_BOUNDARY=`date +%Y%m%d%H%M%N`
+    mail_from="grasys WireGuard Service <noreply@grasys.io>"
+    mail_to="$1"
+    mail_cc="$2"
+    mail_bcc="$3"
+    mail_subject="WireGuard VPN Client Config"
+    mail_boundary=`date +%Y%m%d%H%M%N`
+    mail_attachment1_filename="gratunl_ipv4.conf"
+    mail_attachment1=`cat ${client_config_path_ipv4}`
+    mail_attachment2_filename="gratunl_ipv6.conf"
+    mail_attachment2=`cat ${client_config_path_ipv6}`
+    cat templates/postfix/sendmail_to_user.tmpl | mo | sendmail -t
+}
+
 ###############################################################################
 ### argc sub-commands
 # @cmd debug
@@ -320,20 +335,9 @@ create_user() {
 
   if [ "${argc_nomail}" = "1" ]
   then
-    echo 'nomail'
+    _info 'do not sendmail'
   else
-    MAIL_BOUNDARY=`date +%Y%m%d%H%M%N`
-    mail_from="grasys WireGuard Service <noreply@grasys.io>"
-    mail_to="${argc_user}"
-    mail_cc=""
-    mail_bcc=""
-    mail_subject="WireGuard VPN Client Config"
-    mail_boundary=`date +%Y%m%d%H%M%N`
-    mail_attachment1_filename="gratunl_ipv4.conf"
-    mail_attachment1=`cat ${client_config_path_ipv4}`
-    mail_attachment2_filename="gratunl_ipv6.conf"
-    mail_attachment2=`cat ${client_config_path_ipv6}`
-    cat templates/postfix/sendmail_to_user.tmpl | mo | sendmail -t
+    _sendmail_client_config ${argc_user}
   fi
 }
 

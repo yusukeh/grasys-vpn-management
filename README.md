@@ -251,11 +251,10 @@ ulimit -a
 [Google Cloud Compute Engine - Sending Email - Using SendGrid with Postfix](https://cloud.google.com/compute/docs/tutorials/sending-mail/using-sendgrid?hl=ja)
 
 > [!TIP]
-> Postfix パッケージ(メール転送エージェント)をインストールする際、対話的に事前設定項目を質問されるので「5. Local only」など適宜回答して進みます。
-> ToDo: 回答項目を手順に盛り込む
+> Postfix パッケージ(メール転送エージェント)をインストールする際、通常、debconf による対話的な設定を行なう必要があるが利用する機能が限られているため、対話モードを省略してインストールさせます。
 
 ```bash
-sudo apt install postfix libsasl2-modules
+DEBIAN_FRONTEND=noninteractive apt install postfix libsasl2-modules
 ```
 
 #### SendGrid API Key

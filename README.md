@@ -37,7 +37,7 @@ grasys Incのwireguardを管理するツールです。
 
 基本的にはCommand-Lineのみのツールになっています。
 
-* Instance作成 [README-instance.md](README-instance.md)
+* Instancei 作成 [README-instance.md](README-instance.md)
 * 運用管理用マニュアル [README-ops.md](README-ops.md)
 
 ## Requirements
@@ -66,6 +66,7 @@ grasys Incのwireguardを管理するツールです。
 ## Setup Server
 
 > [!IMPORTANT]
+> Instance 作成後、ssh ログイン
 > rootで実施してください。
 
 ### Setup: apt
@@ -126,7 +127,7 @@ fi
 ### add ssh public key for github
 
 > [!TIP]
-> 生成された鍵でGithub にアクセスできるよう,公開鍵(次のコマンドで表示されるもの)を登録します。
+> 生成された鍵でGithub にアクセスできるよう、公開鍵(次のコマンドで表示されるもの)を[github の鍵設定ページ](https://github.com/settings/keys)のNew SSH Key から登録します。
 
 ```bash
 cat .ssh/grasys_girhub.id_ed25519.pub

@@ -15,7 +15,7 @@
 
 環境変数
 ```bash
-project="適用するプロジェクト ※ 要書き換え"
+project="適用するプロジェクト" # 要書き換え
 vpc="dualstack-vpc"
 region="asia-northeast1"
 subnet_name="dualstack-tokyo"
@@ -25,6 +25,8 @@ firewall_rules_ipv4_name="vpn-custom-port-ipv4"
 firewall_rules_ipv6_name="vpn-custom-port-ipv6"
 firewall_rules_open_port="59820"
 firewall_rules_office_ipv4_addr="182.169.73.7/32"
+external_static_ipv4_name="vpn-endpoint-ipv4"
+external_static_ipv6_name="vpn-endpoint-ipv6"
 instance_name="dualstack-vpn-server"
 instance_zone="asia-northeast1-b"
 instance_machine_type="e2-medium"
@@ -48,15 +50,22 @@ gcloud compute --project=${project} firewall-rules create ${firewall_rules_ipv6_
 gcloud compute --project=${project} firewall-rules create allow-ssh-from-office --direction=INGRESS --priority=1000 --network=${vpc} --action=ALLOW --rules=tcp:22 --source-ranges=${firewall_rules_office_ipv4_addr} --target-tags=${target_tags}
 ```
 
-### Instances (Google Compute Engine)
-ToDo: 静的外部IPv4, IPv6アドレスを予約、インスタンス作成時に割り当て
+### External static IP address for VPN endpoint
+```bash
+# IPv4
+gcloud compute addresses create ${external_static_ipv4_name} --project=${project} --region=${region}
 
+# IPv6
+gcloud compute addresses create ${external_static_ipv6_name} --project=${project} --ip-version=IPV6 --region=${region} --endpoint-type=VM --subnet=projects/${project}/regions/${region}/subnetworks/${subnet_name}
+```
+
+### Instances (Google Compute Engine)
 ```bash
 gcloud compute instances create ${instance_name} \
     --project=${project} \
-    --zone=asia-northeast1-b \
+    --zone=${instance_zone} \
     --machine-type=${instance_machine_type} \
-    --network-interface=ipv6-network-tier=PREMIUM,network-tier=PREMIUM,stack-type=IPV4_IPV6,subnet=${subnet_name} \
+    --network-interface=address=${external_static_ipv4_name},external-ipv6-address=${external_static_ipv6_name},external-ipv6-prefix-length=96,ipv6-network-tier=PREMIUM,network-tier=PREMIUM,stack-type=IPV4_IPV6,subnet=${subnet_name} \
     --maintenance-policy=MIGRATE \
     --provisioning-model=STANDARD \
     --no-service-account \

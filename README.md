@@ -217,34 +217,6 @@ do
 done
 ```
 
-### Setup: pam
-
-> [!IMPORTANT]
-> けっこう危険なので気を付けてｗ
-
-```bash
-declare pam_files=(/etc/pam.d/common-session /etc/pam.d/common-session-noninteractive)
-for f in ${pam_files[@]}
-do
-  grep "session required ppam_limits.so" ${f} &> /dev/null
-  res=$?
-  if [ $res -ne 0 ]; then
-    echo "session required pam_limits.so" >> ${f}
-    cat ${f}
-  fi
-done
-```
-
-### Setup: ulimit
-
-```bash
-cd /opt/grasys-vpn-management
-if [ ! -L /etc/security/limits.d/99_unlimited.conf ]; then
-  ln -s /opt/grasys-vpn-management/etc/security/limits.d/99_unlimited.conf /etc/security/limits.d/99_unlimited.conf
-fi
-ulimit -a
-```
-
 ### Setup: Postfix
 
 [Google Cloud Compute Engine - Sending Email - Using SendGrid with Postfix](https://cloud.google.com/compute/docs/tutorials/sending-mail/using-sendgrid?hl=ja)
@@ -333,21 +305,6 @@ cd /opt/grasys-vpn-management
 declare interface=$(yq -r .interface config/wireguard.yaml)
 systemctl enable wg-quick@${interface}
 systemctl status wg-quick@${interface}
-```
-
-> [!TIP]
-> systemctl edit wg-quick@${interface}
-> このコマンドでService SectionのLimitNOFILEを修正します。
-
-```bash
-cd /opt/grasys-vpn-management
-declare interface=$(yq -r .interface config/wireguard.yaml)
-vi /etc/systemd/system/multi-user.target.wants/wg-quick@wg0.service
-```
-
-```bash
-[Service]
-LimitNOFILE=65535
 ```
 
 ## Usage

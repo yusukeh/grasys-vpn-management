@@ -182,7 +182,13 @@ function _generate_wireguard_server_interface_part_config() {
 
   email="root"
 
-  _insert_client $email
+  if [ "$1" = "without_sql_insert_user" ]
+  then
+    _info "without sql_insert_user"
+  else
+    _insert_client $email
+  fi
+
   sql=$(mo templates/sqlite3/select_ipaddr4.sql)
   server_ipv4=$(sqlite3 ${database} "${sql}")
   sql=$(mo templates/sqlite3/select_ipaddr6.sql)
@@ -195,7 +201,7 @@ function _generate_wireguard_server_interface_part_config() {
 }
 
 function _generate_wireguard_client_config() {
-  _info "generate wireguard client config"
+  _info "generate wireguard client config $1"
 
   if [ "$1" = "" ]
   then
@@ -204,7 +210,13 @@ function _generate_wireguard_client_config() {
 
   email=$1
 
-  _insert_client $email
+  if [ "$2" = "without_sql_insert_user" ]
+  then
+    _info "without sql_insert_user"
+  else
+    _insert_client $email
+  fi
+
   sql=$(mo templates/sqlite3/select_ipaddr4.sql)
   client_ipv4=$(sqlite3 ${database} "${sql}")
   sql=$(mo templates/sqlite3/select_ipaddr6.sql)
@@ -225,8 +237,8 @@ function _generate_wireguard_client_config() {
   server_ipv6=$(sqlite3 ${database} "${sql}")
   server_port=$(yq -r .port < ${config_wireguard})
 
-  endpoint_ipv4=$(curl -4 ipconfig.io)
-  endpoint_ipv6=$(curl -6 ipconfig.io)
+  endpoint_ipv4=$(curl -s -4 ipconfig.io)
+  endpoint_ipv6=$(curl -s -6 ipconfig.io)
 
   endpoint=${endpoint_ipv4}
   cat templates/wireguard/client.conf | mo > data/users/client${client_0id}_ipv4.conf
@@ -267,18 +279,19 @@ function _reload_wireguard_server_config() {
 }
 
 function _sendmail_client_config() {
-    MAIL_BOUNDARY=`date +%Y%m%d%H%M%N`
-    mail_from="grasys WireGuard Service <noreply@grasys.io>"
-    mail_to="$1"
-    mail_cc="$2"
-    mail_bcc="$3"
-    mail_subject="WireGuard VPN Client Config"
-    mail_boundary=`date +%Y%m%d%H%M%N`
-    mail_attachment1_filename="gratunl_ipv4.conf"
-    mail_attachment1=`cat ${client_config_path_ipv4}`
-    mail_attachment2_filename="gratunl_ipv6.conf"
-    mail_attachment2=`cat ${client_config_path_ipv6}`
-    cat templates/postfix/sendmail_to_user.tmpl | mo | sendmail -t
+  _info "Send mail client config to $1 $2 $3"
+  MAIL_BOUNDARY=`date +%Y%m%d%H%M%N`
+  mail_from="grasys WireGuard Service <noreply@grasys.io>"
+  mail_to="$1"
+  mail_cc="$2"
+  mail_bcc="$3"
+  mail_subject="WireGuard VPN Client Config"
+  mail_boundary=`date +%Y%m%d%H%M%N`
+  mail_attachment1_filename="gratunl_ipv4.conf"
+  mail_attachment1=`cat ${client_config_path_ipv4}`
+  mail_attachment2_filename="gratunl_ipv6.conf"
+  mail_attachment2=`cat ${client_config_path_ipv6}`
+  cat templates/postfix/sendmail_to_user.tmpl | mo | sendmail -t
 }
 
 ###############################################################################
@@ -325,7 +338,7 @@ setup_openvpn() {
 # @option -u --user!
 # @flag -n --nomail
 create_user() {
-  _info "Create User"
+  _info "Create User: ${argc_user}"
 
   _load_mustache
   _generate_wireguard_client_config ${argc_user} # Return: client_config_path
@@ -339,6 +352,23 @@ create_user() {
   else
     _sendmail_client_config ${argc_user}
   fi
+}
+
+# @cmd create user all without sql_insert_user
+create_user_all() {
+  _info "Create User All without sql_insert_user"
+
+  _load_mustache
+
+  sql="SELECT email FROM clients WHERE email != 'root'"
+
+  for user in `sqlite3 ${database} "${sql}"`
+  do
+    _info ${user}
+    _generate_wireguard_client_config ${user} "without_sql_insert_user"
+    _generate_wireguard_server_peer_part_config
+  done
+  _generate_wireguard_server_interface_part_config "without_sql_insert_user"
 }
 
 # @cmd create user
@@ -362,8 +392,8 @@ delete_user() {
 show_users() {
   _info "Show Users"
 
+  # ToDo: 見やすい表示にする
   sqlite3 ${database} < sql/select_show_users.sql
-
 }
 
 ###############################################################################

@@ -66,8 +66,7 @@ grasys Incのwireguardを管理するツールです。
 ## Setup Server
 
 > [!IMPORTANT]
-> Instance 作成後、ssh ログイン
-> rootで実施してください。
+> Instance 作成後、ssh ログインし、rootで実施してください。
 
 ### Setup: apt
 

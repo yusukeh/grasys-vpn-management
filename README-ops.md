@@ -72,7 +72,7 @@ argc delete_user
 ```
 
 ## (ToDo: 操作名要検討)
-サーバ・インスタンスの復旧やリプレイス、構成変更などの際に、データベースあるユーザ情報からClient config (Server config も含む)を一括再作成する場合に使用
+サーバ・インスタンスの復旧やリプレイス、構成変更などの際に、データベースにあるユーザ情報からClient config (Server config も含む)を一括再作成する場合に使用
 ```sh
 argc create_user_all
 ```

@@ -1,5 +1,7 @@
 # wireguard
 interface: wg0
+
+# 使用するポート番号を変更する際は、インスタンス作成手順のファイアウォール・ルール開放ポート番号(firewall_rules_open_port)も合わせて変更
 port: 59820
 
 ipv4: 

@@ -32,7 +32,7 @@ sudo su -
 cd /opt/grasys-vpn-management/
 ```
 
-# 
+# ユーザ管理作業
 ## ユーザ確認(一覧)
 ```sh
 argc show_users
@@ -69,4 +69,10 @@ user_email="ito+test@grasys.io"
 
 argc delete_user
   --user ${user_email}
+```
+
+## (ToDo: 操作名要検討)
+サーバ・インスタンスの復旧やリプレイス、構成変更などの際に、データベースあるユーザ情報からClient config (Server config も含む)を一括再作成する場合に使用
+```sh
+argc create_user_all
 ```

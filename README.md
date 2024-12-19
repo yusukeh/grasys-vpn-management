@@ -67,6 +67,9 @@ grasys Incのwireguardを管理するツールです。
 
 > [!IMPORTANT]
 > Instance 作成後、ssh ログインし、rootで実施してください。
+```bash
+sudo su -
+```
 
 ### Setup: apt
 
@@ -304,6 +307,7 @@ EOL
 cd /opt/grasys-vpn-management
 declare interface=$(yq -r .interface config/wireguard.yaml)
 systemctl enable wg-quick@${interface}
+systemctl start wg-quick@${interface}
 systemctl status wg-quick@${interface}
 ```
 

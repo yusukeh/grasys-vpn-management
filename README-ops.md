@@ -52,14 +52,14 @@ root@ds-test-vpn-server:/opt/grasys-vpn-management#
 ```sh
 user_email="ito+test@grasys.io"
 
-argc create_user
+argc create_user \
   --user ${user_email}
 ```
 
 作成時にメールを送らない場合
 ```sh
-argc create_user
-  --user ${user_email}
+argc create_user \
+  --user ${user_email} \
   --nomail
 ```
 
@@ -67,7 +67,7 @@ argc create_user
 ```sh
 user_email="ito+test@grasys.io"
 
-argc delete_user
+argc delete_user \
   --user ${user_email}
 ```
 

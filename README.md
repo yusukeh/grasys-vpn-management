@@ -307,7 +307,6 @@ EOL
 cd /opt/grasys-vpn-management
 declare interface=$(yq -r .interface config/wireguard.yaml)
 systemctl enable wg-quick@${interface}
-systemctl start wg-quick@${interface}
 systemctl status wg-quick@${interface}
 ```
 
